@@ -6,12 +6,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
+  imports: [FormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   template: `
     <div class="auth-container">
       <mat-card class="auth-card">
@@ -20,6 +21,9 @@ import { AuthService } from '../../services/auth.service';
           <mat-card-subtitle class="auth-subtitle">Sign in to continue</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
+          @if (error) {
+            <div class="error-msg">{{error}}</div>
+          }
           <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Email</mat-label>
@@ -33,8 +37,8 @@ import { AuthService } from '../../services/auth.service';
                 <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
             </mat-form-field>
-            <button mat-raised-button color="primary" class="full-width auth-btn" type="submit" [disabled]="!loginForm.valid">
-              Sign In
+            <button mat-raised-button color="primary" class="full-width auth-btn" type="submit" [disabled]="!loginForm.valid || loading">
+              @if (loading) { <mat-spinner diameter="20" class="spinner" /> } @else { Sign In }
             </button>
           </form>
         </mat-card-content>
@@ -50,22 +54,32 @@ import { AuthService } from '../../services/auth.service';
     .auth-title { font-size: 1.75rem; font-weight: 600; }
     .auth-subtitle { margin-top: 4px; }
     .full-width { width: 100%; }
-    .auth-btn { margin-top: 8px; height: 48px; border-radius: 8px; font-size: 1rem; }
+    .auth-btn { margin-top: 8px; height: 48px; border-radius: 8px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .auth-footer { justify-content: center; padding: 8px 16px 16px; }
     .auth-footer a { color: #60a5fa; text-decoration: none; font-weight: 500; }
     .auth-footer a:hover { text-decoration: underline; }
+    .error-msg { background: rgba(243,139,168,0.15); color: #f38ba8; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 0.9rem; }
+    .spinner { display: inline-block; margin-right: 8px; }
   `]
 })
 export class LoginComponent {
   email = '';
   password = '';
   hide = true;
+  loading = false;
+  error = '';
   private auth = inject(AuthService);
   private router = inject(Router);
 
   onSubmit(): void {
-    if (this.auth.login(this.email, this.password)) {
-      this.router.navigate(['/dashboard']);
-    }
+    this.loading = true;
+    this.error = '';
+    this.auth.login(this.email, this.password).subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: (err) => {
+        this.error = err.error?.message || 'Login failed';
+        this.loading = false;
+      }
+    });
   }
 }
