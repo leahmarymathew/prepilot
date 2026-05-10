@@ -1,59 +1,110 @@
-# Myapp
+# PrepPilot
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+PrepPilot is a full-stack interview preparation platform with user authentication and a personalized dashboard for DSA progress tracking.
 
-## Development server
+## Tech Stack
 
-To start a local development server, run:
+### Frontend
+- Angular 21 (standalone components)
+- Angular Material
+- RxJS
 
-```bash
-ng serve
+### Backend
+- Node.js
+- Express
+- MongoDB with Mongoose
+- JWT authentication
+
+## Features
+- User registration and login
+- Protected frontend routes with auth guard
+- Token-based API access via HTTP interceptor
+- Dashboard data API with problem-solving and topic progress metrics
+- Responsive dashboard layout with sidebar and navbar components
+
+## Project Structure
+
+```text
+prepilot/
+├── src/                     # Angular frontend
+│   └── app/
+│       ├── auth/            # Login and registration
+│       ├── dashboard/       # Dashboard UI
+│       ├── layout/          # Main protected layout
+│       ├── services/        # Auth and dashboard services
+│       └── shared/          # Navbar and sidebar components
+├── backend/
+│   ├── config/              # Database connection
+│   ├── controllers/         # Route handlers
+│   ├── models/              # Mongoose models
+│   ├── routes/              # API routes
+│   └── server.js            # Express entry point
+└── README.md
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Getting Started
 
-## Code scaffolding
+### Prerequisites
+- Node.js and npm
+- MongoDB instance
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### 1) Install Frontend Dependencies
 
 ```bash
-ng generate --help
+npm install
 ```
 
-## Building
-
-To build the project run:
+### 2) Install Backend Dependencies
 
 ```bash
-ng build
+cd backend
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 3) Configure Environment Variables
 
-## Running unit tests
+Create a `.env` file in `/backend` with:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=5000
+```
+
+### 4) Run the Backend
+
+From `/backend`:
 
 ```bash
-ng test
+npm run dev
 ```
 
-## Running end-to-end tests
+### 5) Run the Frontend
 
-For end-to-end (e2e) testing, run:
+From project root:
 
 ```bash
-ng e2e
+npm start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Frontend: `http://localhost:4200`  
+Backend: `http://localhost:5000`
 
-## Additional Resources
+## Available Scripts
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Frontend (root)
+- `npm start` - Run Angular dev server
+- `npm run build` - Build frontend app
+- `npm test` - Run unit tests
+
+### Backend (`/backend`)
+- `npm run dev` - Run backend with nodemon
+- `npm start` - Run backend with node
+
+## API Endpoints
+
+Base URL: `http://localhost:5000/api`
+
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - Log in and receive JWT token
+- `GET /dashboard` - Fetch dashboard data (requires `Authorization: Bearer <token>`)
